@@ -72,3 +72,18 @@ apt-get update -y
 ```
 
 bootstrap.sh 파일은 가상머신 실행 후 해당 스크립트를 실행해서 가상머신의 환경을 설정합니다. 위의 내용은 패키지 다운로드 주소를 ftp.daum.net 주소로 설정을 합니다. 그 외 다양하게 개발 환경에 필요한 Redis, Memcached, Nginx, Apache 서버와 같은 패키지를 설치할 수 있습니다.
+
+### Vagrant 실행
+
+```console
+# vagrant 실행
+vagrant up
+# ssh 접속
+vagrant ssh
+
+# docker compose 로 nginx 실행
+cd /vagrant/docker/nginx
+docker-compose up -d
+```
+
+192.168.2.10 접속하면 nginx 접속화면을 확인 가능.
