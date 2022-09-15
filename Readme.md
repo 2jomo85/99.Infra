@@ -163,6 +163,20 @@ COPY . ./
 EXPOSE 8000
 ```
 
+backend/web/requirements.txt
+
+```
+asgiref==3.5.0
+Django==4.0.2
+django-cors-headers==3.11.0
+djangorestframework==3.13.1
+gunicorn==20.1.0
+mysqlclient==2.1.0
+python-dotenv==0.19.2
+pytz==2021.3
+sqlparse==0.4.2
+```
+
 #### Nginx 준비
 
 Dockerfile 과 conf 파일을 dev 로 만드는 이유는, 향후 배포를 위해 파일을 분리하기 위함이다.
