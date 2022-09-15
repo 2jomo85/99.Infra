@@ -42,10 +42,10 @@ services:
       TZ: "Asia/Seoul"
     volumes:
       - ./mariadb/volume:/var/lib/mysql
-      - ./mariadb/sql:docker-entrypoint-initdb.db
+      - ./mariadb/sql:docker-entrypoint-initdb.d
     networks:
       - backend_network
-    # restart: always # <-- always runnung...
+    # restart: always # <-- always running...
 networks:
   backend_network:
     driver: bridge
