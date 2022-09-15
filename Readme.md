@@ -273,3 +273,68 @@ GRANT ALL PRIVILEGES ON testdb.* TO 'user'@'%';
 ```
 
 ## 5. docker-compose 로 Backend 시작
+
+### docker-compose.yml 작성
+
+```docker
+version: "3.7"
+
+services:
+  web:
+    container_name: web
+    env_file: ./bacnekd/web/.env
+    build: ./backend/web/.
+    volumes:
+      - ./backend/web:/code/
+      - static_volume:/code/staticfiles # <-- bind the static volume
+    stdin_open: true
+    tty: true
+    command: gunicorn --bind :8000 config.wsgi:application
+    networks:
+      - backend_network
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - DJANGO_SETTINGS_MODULE=config.local_settings
+    depends_on:
+      - db
+  bacnekd-server:
+    container_name: nginx-back
+    build:
+      context: ./backend/nginx/.
+      dockerfile: Dockerfile.dev
+    volumes:
+      - static_volume:/code/staticfiles # <-- bind the static volume
+    ports:
+      - "8080:80"
+    depends_on:
+      - web
+    networks:
+      - backend_network
+  db:
+    container_name: db
+    build: ./mariadb
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    env_file: ./mariadb/.env
+    environment:
+      TZ: "Asia/Seoul"
+    volumes:
+      - ./mariadb/volume:/var/lib/mysql
+      - ./mariadb/sql:docker-entrypoint-initdb.db
+    networks:
+      - backend_network
+    # restart: always # <-- always runnung...
+networks:
+  backend_network:
+    driver: bridge
+volumes:
+  static_volume:
+
+```
+
+docker-compose 실행
+
+```shell
+docker-compose run --rm web sh -c "django-admin startproject config."
+```

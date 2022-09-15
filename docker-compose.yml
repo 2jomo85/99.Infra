@@ -3,7 +3,7 @@ version: "3.7"
 services:
   web:
     container_name: web
-    env_file: ./bacnekd/web/.env
+    env_file: ./backend/web/.env
     build: ./backend/web/.
     volumes:
       - ./backend/web:/code/
@@ -18,7 +18,7 @@ services:
       - DJANGO_SETTINGS_MODULE=config.local_settings
     depends_on:
       - db
-  bacnekd-server:
+  backend-server:
     container_name: nginx-back
     build:
       context: ./backend/nginx/.
