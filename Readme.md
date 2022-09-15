@@ -350,5 +350,38 @@ volumes:
 docker-compose 실행
 
 ```shell
-docker-compose run --rm web sh -c "django-admin startproject config."
+# manage.py 생성
+docker-compose run --rm web sh -c "django-admin startproject config ."
+#
+docker-compose run --rm web sh -c "python manage.py startapp todo"
+```
+
+## 개발환경과 설정파일
+
+개발환경과 프로덕션 환경에 대한 설정 파일을 분리하고 싶기 때문에, <span style='background-color: #f6f8fa'>web/config</span> 폴더 하위에<span style='background-color: #f6f8fa'>local_settings.py</span> 파일을 생성.
+
+web/config/local_settings.py
+
+```py
+from .settings import *
+
+DEBUG = True
+
+ALLOWED_HOSTS = ['*']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'testdb',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '3306',
+    }
+}
+```
+
+```shell
+# build
+docker-compose up --build
 ```
