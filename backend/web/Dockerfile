@@ -3,7 +3,7 @@
 FROM python:3.10.2
 
 # set environment variables
-ENV PYTHONDOWNTWRITTEBYTECODE 1
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # set work directory
