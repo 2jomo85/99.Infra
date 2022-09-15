@@ -1,4 +1,4 @@
-FROM mariadb:10.10.1
+FROM mariadb:10.9.2
 
 RUN ehck "USE mysql;" > docker-entrypoint-initdb.d/timezones.sql && mysql_tzinfo_to_sql /usr/share/zoneinfo >> docker-entrypoint-initdb.d/timezones.sql
 
