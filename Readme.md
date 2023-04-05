@@ -14,14 +14,104 @@
 아래 링크에서 Vagrant 설치.  
 [Vagrant](https://www.vagrantup.com/downloads)
 
-### Vagrant 실행
+### Vagrant 명령어
 
 ```console
-# vagrant 도움말
-vagrant --help
+# vagrant box 추가 (어느 경로에서 실행을 해도 상관없음)
+$ vagrant box add ubuntu/focal64
 
-# Vagrantfile 생성
-vagrant init
+# 홈디렉토리의 .vagrant.d/boxes 디렉토리에 해당 box 명으로 이미지가 만들어진다.
+$ ls ~/.vagrant.d/boxes/
+
+# box 목록 확인
+$ vagrant box list
+ubuntu/focal64 (virtualbox, 20210413.0.0)
+
+# vagrant 프로젝트 디렉토리 생성. 파일 관리를 편리하게 하기 위한 것임.
+필수는 아니나 디렉토리를 잘 관리하는게 편리함.
+vagrant init 를 하면 해당 디렉토리에 Vagrantfile 이 만들어지므로 이것을 참고하여 디렉토리 구조 만듬.
+$ mkdir porject/test
+$ cd project/test
+
+# vagrant instance 생성 (이 과정에서 설정파일인 Vagrantfile 이 만들어짐)
+$ vagrant init ubuntu/focal64
+
+# vagrant instance 시작하기(부팅)
+$ vagrant up
+
+# ssh 접속하기. vagrant ssh 로 접속시에는 비밀번호 없이 자동접속 가능함.
+# 또는 host 127.0.0.1 ,port 2222, username vagrant 로 설정을 하여 putty 등에서도 접속을 할 수도 있음.
+$ vagrant ssh
+
+# vagrant VM shutdown
+$ vagrant halt
+
+# vagrant box 없애기
+$ vagrant destroy
+
+# 새로운 vagrant box 생성하기
+$ vagrant up
+```
+
+### vagrant 설정폴더 변경
+
+Vagrant global state 정보를 저장하는 VAGRANT_HOME 변수를 변경할 수 있으며 기본값은 ~/.vagrant.d 이다. boxes 등을 이 디렉토리에 저장 하기 때문에 디스크 용량을 많이 차지할 가능성이 많다.
+
+이 부분을 윈도우에서 변경을 하려면 c:\users\yourusename 의 .bashprofile 에 다음의 내용을 넣어주면 된다.
+
+```bach
+setx VAGRANT_HOME "D:\.vagrand.d"
+```
+
+## vagrant 설정 변경하기
+
+vagrant init 를 하면 명렁을 실행한 해당 디렉토리에 Vagrantfile 파일이 생긴다. 이 파일을 수정하면 vagrant up 을 할 때 여러가지 작업을 조합할 수 있다.
+
+### vagrant 주요 옵션
+
+`vm.box`: 사용할 이미지
+`vm.network : fowarded_port`: 호스트의 port 를 VM guest 의 지정 포트로 포워드
+`vm.network "private_network"`: VM 에 ip 지정
+`vm.provision`: 특정 명령어 실행, 스크립트 실행 등
+`vm.hostname`: hostname설정
+
+```ini
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"
+  config.vm.network :forwarded_port, guest: 80, host: 4567
+  config.vm.network "private_network", ip: "192.168.33.100"
+
+#  config.vm.provision "shell", path: "test.sh"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y nginx
+    echo "test" > /var/www/html/index.html
+  SHELL
+
+  config.vm.hostname = 'www.example.com'
+end
+```
+
+### vagrant provisioning -shell
+
+처음으로 vagrant up 을 할 때 프로비저닝이 실행된다. 첫 가동 이후에는 vagrant up --provision 을 지정해서 가동하거나 가상 서버 가동 후에 vagrant provision 을 실행하면 프로비저닝이 가능하다.
+
+sehll 을 이용하여 프로비저닝 하는 것이 가능하며 inline 을 이용 원하는 스크립트를 실행할 수 있다.
+
+[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer]("https://docs.vagrantup.com/v2/provisioning/shell.html")
+
+```bash
+vim Vagrantfile
+  Vagrant.configure("2") do |config|
+    config.vm.box = "ubuntu/focal64"
+    config.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y apache2
+    SHELL
+  end
+
+vagrant provision
 ```
 
 ### Vagrantfile
